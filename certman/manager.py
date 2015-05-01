@@ -1,6 +1,7 @@
 import yaml
 import os
 import sqlite3
+import shutil
 from datetime import datetime, timedelta
 
 from terminaltables import AsciiTable
@@ -44,6 +45,13 @@ class CertificateFileStorage(object):
             }
             f.write(yaml.dump(store_obj, default_flow_style=False))
 
+    def delete(self, email):
+        path = os.path.join(os.path.dirname(self.store_path), email)
+        try:
+            shutil.rmtree(path)
+        except OSError:
+            pass
+
     def check_exist(self, certificate):
         new_path = os.path.join(os.path.dirname(self.store_path), certificate.email)
         return os.path.exists(new_path)
@@ -70,6 +78,21 @@ class CertificateDBStorage(object):
         }
         c.execute("INSERT INTO certificates VALUES (NULL, date('now'), '%(email)s', '%(password)s', '%(enrollment_id)s', '%(questions)s');" % params)
         self.conn.commit()
+
+    def delete(self, id_num):
+        try:
+            c = self.conn.cursor()
+            
+            c.execute("SELECT email FROM certificates WHERE id='%s' OR email='%s';" % (id_num, id_num))
+            email = (c.fetchone())[0]
+
+            c = self.conn.cursor()
+            c.execute("DELETE FROM certificates WHERE id='%s' OR email='%s';" % (id_num, id_num))
+            self.conn.commit()
+
+            return email
+        except Exception as e:
+            return None
 
 
 class Reporter(object):
@@ -103,6 +126,7 @@ class Manager(object):
     COMMANDS = (
         ('addcert', 'add new certificate today'),
         ('report', 'generate this week report'),
+        ('delete', 'delete certificate by ID or email'),
         ('exit', 'exit')
     )
 
@@ -168,6 +192,14 @@ class Manager(object):
                 print table.table
                 print
                 print "Total certificates obtained: %s" % total
+            elif command == 'delete':
+                id_num = raw_input("Please enter # ID or E-mail: ")
+                if raw_input('Are you sure that you want to delete the certificate? (y/n): ') == 'y':
+                    db_storage = CertificateDBStorage(db=SETTINGS['db'])
+                    email = db_storage.delete(id_num)
+                    file_storage = CertificateFileStorage(store_path=SETTINGS['store_path'])
+                    file_storage.delete(email)
+
             elif command == 'exit':
                 return 0
             else:
