@@ -1,3 +1,4 @@
+import yaml
 import os
 import sqlite3
 from datetime import datetime, timedelta
@@ -37,13 +38,11 @@ class CertificateFileStorage(object):
     def save(self, certificate):
         new_path = os.path.join(os.path.dirname(self.store_path), certificate.email)
         os.mkdir(new_path)
-        with open(new_path + '/credentials.txt', 'w') as f:
-            f.write('email: "%s"\n' % certificate.email)
-            questions = format_questions(certificate.questions)
-            for question in questions:
-                f.write(question)
-            f.write('enrollment: "%s"\n' % certificate.enrollment_id)
-            f.write('password: "%s"\n' % certificate.password)
+        with open(new_path + '/credentials.yaml', 'w') as f:
+            store_obj = {
+                'certificate': certificate.__dict__
+            }
+            f.write(yaml.dump(store_obj, default_flow_style=False))
 
     def check_exist(self, certificate):
         new_path = os.path.join(os.path.dirname(self.store_path), certificate.email)
