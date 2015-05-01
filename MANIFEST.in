@@ -1,0 +1,4 @@
+include certman/bin/certman
+include certman/bin/certman-config
+include certman/manager.py
+include certman/settings.py

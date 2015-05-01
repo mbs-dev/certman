@@ -1,0 +1,23 @@
+#!/usr/bin/env python
+
+store_path = raw_input('What is the path where to store certificates info as plain files?: ')
+default_password = raw_input('Enter the default password: ')
+db = raw_input('Database path: ')
+
+template = """
+### Certman
+
+export CERTMAN_STORE_PATH='%(store_path)s'
+export CERTMAN_DEFAULT_PASSWORD='%(default_password)s'
+export CERTMAN_DB='%(db)s'
+
+"""
+
+print
+print "Please add following lines into your ~/.bash_profile:"
+print
+print template % {
+	'store_path': store_path,
+	'default_password': default_password,
+	'db': db
+}
