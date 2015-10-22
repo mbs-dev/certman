@@ -10,5 +10,5 @@ setup(name='certman',
       url='https://www.python.org/',
       packages=['certman'],
       scripts=['certman/bin/certman', 'certman/bin/certman-config'],
-      install_requires=['prettytable==0.7.2', 'PyYAML==3.11']
+      install_requires=['terminaltables==1.1.1', 'PyYAML==3.11']
      )
