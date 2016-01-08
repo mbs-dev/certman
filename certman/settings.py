@@ -1,4 +1,6 @@
+#!coding:utf-8
 import os
+
 
 SETTINGS = {
 	'store_path': os.environ['CERTMAN_STORE_PATH'],
