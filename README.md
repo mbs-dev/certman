@@ -1,4 +1,4 @@
-Certman Store Manager
+Certificates Storage Manager
 ===
 
 1. Install ```sudo pip install git+https://github.com/mbs-dev/certman.git```
